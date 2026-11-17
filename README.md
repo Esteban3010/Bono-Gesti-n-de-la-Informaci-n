@@ -50,22 +50,9 @@ cd <CARPETA_DEL_REPOSITORIO>
 
 También puedes descargarlo desde GitHub mediante **Code → Download ZIP** y descomprimirlo.
 
-### Paso 2. Crear un entorno virtual de Python (Opcional)
+### Paso 2. Instalar las dependencias
 
-Desde la carpeta donde se encuentra `app.py`, ejecuta:
-
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-El entorno virtual permite instalar las dependencias sin afectar otras aplicaciones de Python.
-
-> Si PowerShell bloquea la activación, puedes utilizar directamente `.\.venv\Scripts\python.exe` en lugar de `python` en los siguientes comandos, sin activar el entorno.
-
-### Paso 3. Instalar las dependencias
-
-Con el entorno virtual activado, ejecuta:
+Desde la carpeta del proyecto, ejecuta:
 
 ```powershell
 python -m pip install flask oracledb
@@ -73,14 +60,14 @@ python -m pip install flask oracledb
 
 Estas son las dos dependencias externas que utiliza `app.py`.
 
-### Paso 4. Establecer el acceso remoto con OneGate
+### Paso 3. Establecer el acceso remoto con OneGate
 
 1. Inicia sesión en **OneGate** con tu cuenta institucional.
 2. Selecciona el acceso al servidor **SVRING1**.
 3. Inicia **TunnelClient** y verifica que la conexión esté activa.
 4. Mantén esa conexión abierta mientras utilices la aplicación.
 
-### Paso 5. Crear el túnel SSH hacia Oracle
+### Paso 4. Crear el túnel SSH hacia Oracle
 
 Abre **otra ventana de PowerShell** y ejecuta:
 
@@ -100,34 +87,35 @@ Este comando reenvía el puerto local **1521** al puerto **1521** del servidor r
 
 > El comando corresponde a la configuración de acceso remoto utilizada en este proyecto. Si la universidad cambia el acceso o el puerto de TunnelClient, deberás actualizarlo.
 
-### Paso 6. Configurar las credenciales de Oracle
+### Paso 5. Revisar y configurar la conexión a Oracle en `app.py`
 
-Regresa a la ventana de PowerShell donde activaste el entorno virtual y define las variables de entorno:
+Antes de iniciar la aplicación, abre el archivo **`app.py`** y localiza la función **`conectar()`**. Allí debes comprobar y, si corresponde, modificar **el usuario, la contraseña y la dirección del servidor de Oracle** según la base de datos a la que tengas acceso.
 
-```powershell
-$env:ORACLE_USER="TU_USUARIO_ORACLE"
-$env:ORACLE_PASSWORD="TU_CONTRASEÑA_ORACLE"
-$env:ORACLE_DSN="127.0.0.1:1521/FREEPDB1"
-```
-
-Reemplaza los valores de ejemplo por las credenciales que tengas autorizadas.
-
-Estas variables son leídas por la función `conectar()` de `app.py`. Debes establecerlas **en la misma terminal donde iniciarás Flask**, porque las variables definidas así solo están disponibles en esa sesión.
-
-**Seguridad antes de publicar en GitHub:** la versión inicial de `app.py` conserva credenciales de respaldo dentro de `os.getenv(...)`. Elimina esos valores del código y exige las variables de entorno, por ejemplo:
+La versión actual del proyecto utiliza `os.getenv()` para leer estos datos y, si no se han definido variables de entorno, toma los valores que aparecen como segundo argumento:
 
 ```python
 def conectar():
     return oracledb.connect(
-        user=os.environ["ORACLE_USER"],
-        password=os.environ["ORACLE_PASSWORD"],
-        dsn=os.environ["ORACLE_DSN"],
+        user=os.getenv("ORACLE_USER", "GRUPOBD01"),
+        password=os.getenv("ORACLE_PASSWORD", "TU_CONTRASEÑA_ORACLE"),
+        dsn=os.getenv("ORACLE_DSN", "127.0.0.1:1521/FREEPDB1"),
     )
 ```
 
-Nunca subas contraseñas, archivos `.env` con credenciales ni claves SSH al repositorio. Si una contraseña real ya fue publicada, cámbiala.
+**Datos de referencia de nuestro proyecto:**
 
-### Paso 7. Iniciar Flask
+| Dato | Valor o indicación |
+|---|---|
+| Usuario de Oracle | `GRUPOBD01` |
+| Contraseña | La contraseña asignada al usuario Oracle del grupo; escríbela únicamente en tu copia local, no en GitHub. |
+| Servidor de la universidad | `SVRING1` (acceso mediante OneGate y el túnel SSH). |
+| Dirección de conexión (`dsn`) | `127.0.0.1:1521/FREEPDB1` |
+
+> **¿Por qué el `dsn` no dice `SVRING1`?** Porque la aplicación se conecta al **puerto local `1521`** y el túnel SSH redirige esa conexión al servidor de la universidad. Si utilizas otra base de datos o una conexión directa, cambia el `dsn` por la dirección, el puerto y el servicio correspondientes.
+
+> **Seguridad:** el fragmento anterior es un **ejemplo con la contraseña sustituida por un marcador**. No copies contraseñas reales en un repositorio público. Para publicar el proyecto, es preferible retirar los valores de respaldo y utilizar variables de entorno; no es necesario configurarlas para comprender los pasos de esta instalación local.
+
+### Paso 6. Iniciar Flask
 
 Desde la carpeta raíz del proyecto, ejecuta:
 
@@ -143,7 +131,7 @@ Running on http://127.0.0.1:5000
 
 Mantén esta terminal abierta mientras utilizas la página.
 
-### Paso 8. Abrir la aplicación y consultar una mascota
+### Paso 7. Abrir la aplicación y consultar una mascota
 
 En tu navegador, entra a:
 
@@ -204,8 +192,8 @@ Los recuadros se expanden mediante las etiquetas HTML `<details>` y `<summary>`;
 
 | Problema | Qué revisar |
 |---|---|
-| `ModuleNotFoundError: No module named 'flask'` o `'oracledb'` | Activa el entorno virtual e instala las dependencias del paso 3. |
-| Error al conectar con Oracle | Verifica OneGate, TunnelClient, la ventana del túnel SSH y las variables de entorno. |
+| `ModuleNotFoundError: No module named 'flask'` o `'oracledb'` | Instala las dependencias indicadas en el paso 2. |
+| Error al conectar con Oracle | Verifica OneGate, TunnelClient, el túnel SSH y los datos de conexión indicados en el paso 5 de `app.py`. |
 | `ORA-00942` (tabla o vista no existe) | Comprueba que el usuario Oracle tenga acceso a las tablas del modelo veterinario. |
 | `TemplateNotFound: index.html` | Confirma que el archivo esté en `templates/index.html`. |
 | No se encuentra la mascota | Utiliza un ID que exista en la tabla `MASCOTA`. |
@@ -216,7 +204,8 @@ Los recuadros se expanden mediante las etiquetas HTML `<details>` y `<summary>`;
 - La aplicación **consulta información**; no incluye formularios para crear, modificar o eliminar registros.
 - Las consultas están diseñadas para el modelo relacional Oracle del proyecto veterinario. Si cambian los nombres de las tablas o columnas, será necesario actualizar las sentencias SQL de `app.py`.
 - El servidor integrado de Flask se utiliza aquí para **desarrollo local**, no como servidor de producción.
-- Para compartir el repositorio, agrega al archivo `.gitignore` al menos `.venv/`, `__pycache__/`, `.env` y `*.pyc`.
+- **Seguridad:** antes de subir `app.py` a GitHub, revisa la función `conectar()` y retira cualquier usuario o contraseña real que esté escrito directamente en el código. No publiques credenciales institucionales.
+- Para compartir el repositorio, agrega al archivo `.gitignore` al menos `__pycache__/`, `.env` y `*.pyc`.
 
 ---
 
