@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ficha de mascota | Veterinaria</title>
+    <style>
+        :root {
+            --fondo: #f5f8fb;
+            --texto: #162b3b;
+            --secundario: #607385;
+            --verde: #087c69;
+            --verde-oscuro: #066856;
+            --linea: #e1e8ee;
+            --blanco: #fff;
+            --sombra: 0 12px 34px rgba(31, 57, 74, .055);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--fondo);
+            color: var(--texto);
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            line-height: 1.48;
+        }
+        .barra-superior {
+            background: #113c44;
+            color: #fff;
+            padding: 18px 24px;
+        }
+        .barra-contenido {
+            max-width: 1060px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .marca { font-weight: 800; font-size: 19px; letter-spacing: -.4px; }
+        .barra-etiqueta { opacity: .75; font-size: 13px; }
+        main { max-width: 1060px; padding: 36px 24px 70px; margin: 0 auto; }
+        .cabecera { margin-bottom: 25px; }
+        .sobre-titulo { font-size: 11px; font-weight: 800; color: var(--verde); letter-spacing: 1.7px; text-transform: uppercase; }
+        h1 { margin: 5px 0 6px; font-size: clamp(26px, 4vw, 36px); line-height: 1.2; letter-spacing: -.8px; }
+        .descripcion { margin: 0; color: var(--secundario); }
+        .busqueda {
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            margin: 22px 0 27px;
+            background: var(--blanco);
+            border: 1px solid var(--linea);
+            box-shadow: var(--sombra);
+            border-radius: 16px;
+        }
+        .busqueda label { display: block; color: var(--secundario); font-size: 12px; font-weight: 700; margin: 0 0 4px; }
+        .campo { flex: 1; min-width: 0; }
+        .busqueda input {
+            display: block;
+            width: 100%;
+            padding: 4px 0;
+            color: var(--texto);
+            font: inherit;
+            font-size: 17px;
+            border: none;
+            outline: none;
+        }
+        .busqueda button {
+            padding: 13px 28px;
+            background: var(--verde);
+            color: white;
+            border: 0;
+            border-radius: 11px;
+            font: inherit;
+            font-weight: 750;
+            cursor: pointer;
+            align-self: center;
+            transition: background .15s ease;
+        }
+        .busqueda button:hover { background: var(--verde-oscuro); }
+        .busqueda:focus-within { border-color: #80c5b8; }
+        .alerta {
+            color: #9d3030;
+            background: #fff3f3;
+            border: 1px solid #f0cdcd;
+            padding: 17px 19px;
+            border-radius: 13px;
+        }
+        .perfil {
+            background: var(--blanco);
+            border: 1px solid var(--linea);
+            border-radius: 21px;
+            overflow: hidden;
+            box-shadow: var(--sombra);
+        }
+        .perfil-superior {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            padding: 29px 32px 25px;
+            background: linear-gradient(100deg, #f1fbf8 0%, #fff 80%);
+        }
+        .avatar {
+            width: 84px;
+            height: 84px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 22px;
+            background: #d7f3e9;
+            font-size: 45px;
+        }
+        .perfil-nombre { margin: 1px 0 7px; font-size: clamp(29px, 4vw, 39px); letter-spacing: -1px; line-height: 1.2; }
+        .identificador { font-size: 12px; font-weight: 750; letter-spacing: 1px; text-transform: uppercase; color: var(--verde); }
+        .etiquetas { display: flex; gap: 8px; flex-wrap: wrap; }
+        .etiqueta { display: inline-block; padding: 5px 11px; border-radius: 100px; background: #e6f4f0; color: #176655; font-size: 12px; font-weight: 650; }
+        .etiqueta.clara { background: #f0f3f6; color: #475d6c; }
+        .resumen {
+            padding: 25px 32px 30px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            border-top: 1px solid #eef1f4;
+        }
+        .dato .titulo-dato, .mini-label { display: block; color: var(--secundario); font-size: 12px; font-weight: 680; margin-bottom: 6px; }
+        .dato .valor-dato { font-size: 16px; font-weight: 780; overflow-wrap: anywhere; }
+        .titulo-secciones { margin: 30px 0 13px; font-size: 19px; letter-spacing: -.25px; }
+        .acordeon {
+            margin-bottom: 11px;
+            border: 1px solid var(--linea);
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(31, 57, 74, .025);
+            overflow: hidden;
+        }
+        .acordeon > summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 23px;
+        }
+        .acordeon > summary::-webkit-details-marker, .visita > summary::-webkit-details-marker { display: none; }
+        .icono-seccion { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; background: #e7f5f0; font-size: 21px; flex-shrink: 0; }
+        .texto-seccion { flex: 1; min-width: 0; }
+        .texto-seccion strong { display: block; font-size: 16px; }
+        .texto-seccion small { display: block; color: var(--secundario); font-size: 13px; margin-top: 2px; }
+        .flecha { width: 10px; height: 10px; border: solid #5d7181; border-width: 0 2px 2px 0; transform: rotate(45deg); transition: transform .2s; flex-shrink: 0; margin-right: 6px; }
+        details[open] > summary > .flecha { transform: rotate(225deg); }
+        summary:focus-visible { outline: 2px solid var(--verde); outline-offset: -3px; }
+        .contenido { padding: 4px 23px 23px; border-top: 1px solid #edf1f4; }
+        .rejilla { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 25px; margin-top: 20px; }
+        .celda { min-width: 0; }
+        .celda .valor { font-size: 14px; overflow-wrap: anywhere; white-space: pre-wrap; }
+        .celda.ancho-completo { grid-column: 1 / -1; }
+        .subtarjeta { margin-top: 17px; border: 1px solid #e4ebef; border-radius: 12px; padding: 18px; background: #fcfdfd; }
+        .subtarjeta h4 { margin: 0; font-size: 15px; }
+        .subtarjeta .meta { margin: 4px 0 0; font-size: 13px; color: var(--secundario); }
+        .vacio { color: var(--secundario); font-size: 14px; margin: 20px 0 0; }
+        .visita { margin-top: 12px; border: 1px solid #e6eaee; border-radius: 12px; background: #fcfdfd; overflow: hidden; }
+        .visita > summary { list-style: none; padding: 17px; display: flex; align-items: center; gap: 14px; cursor: pointer; }
+        .visita .fecha { font-size: 12px; color: var(--secundario); margin-top: 4px; }
+        .visita strong { font-size: 14px; display: block; }
+        .visita-titulo { flex: 1; }
+        .visita-contenido { border-top: 1px solid var(--linea); padding: 4px 17px 18px; background: #fff; }
+        .estado { display: inline-block; padding: 5px 9px; border-radius: 8px; font-size: 11px; font-weight: 780; background: #e4f4eb; color: #186543; text-align: center; }
+        .estado.pendiente { background: #fff2d9; color: #8b5a04; }
+        .estado.cancelada { background: #f7e7e7; color: #993e3e; }
+        .separador { height: 1px; background: var(--linea); margin: 16px 0; }
+        .nota { font-size: 12px; color: var(--secundario); margin-top: 14px; }
+        .pie { margin: 30px 0 0; color: var(--secundario); text-align: center; font-size: 12px; }
+        @media (max-width: 720px) {
+            main { padding: 26px 16px 50px; }
+            .perfil-superior { padding: 23px 20px; }
+            .resumen { padding: 22px 20px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .busqueda button { padding: 12px 17px; }
+            .barra-etiqueta { display: none; }
+        }
+        @media (max-width: 460px) {
+            .perfil-superior { align-items: flex-start; gap: 14px; }
+            .avatar { width: 58px; height: 58px; border-radius: 15px; font-size: 31px; }
+            .rejilla { grid-template-columns: 1fr; }
+            .visita > summary { flex-wrap: wrap; }
+            .contenido { padding: 3px 16px 18px; }
+            .acordeon > summary { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="barra-superior">
+        <div class="barra-contenido">
+            <div class="marca">✚ &nbsp;Veterinaria</div>
+            <div class="barra-etiqueta">Sistema de consulta de pacientes</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="cabecera">
+            <div class="sobre-titulo">Gestión de pacientes</div>
+            <h1>Consulta de mascotas</h1>
+            <p class="descripcion">Busca por identificador y consulta su ficha con información organizada.</p>
+        </div>
+
+        <form class="busqueda" method="GET" action="/">
+            <div class="campo">
+                <label for="id">ID de mascota</label>
+                <input id="id" type="number" name="id" min="1" required
+                       placeholder="Ejemplo: 1" value="{{ id_buscado }}">
+            </div>
+            <button type="submit">Buscar mascota</button>
+        </form>
+
+        {% if error %}
+            <div class="alerta" role="alert">{{ error }}</div>
+        {% endif %}
+
+        {% if mascota %}
+            <section class="perfil" aria-labelledby="nombre-mascota">
+                <div class="perfil-superior">
+                    <div class="avatar" aria-hidden="true">
+                        {% if mascota.especie == 'Perro' %}🐶
+                        {% elif mascota.especie == 'Gato' %}🐱
+                        {% elif mascota.especie == 'Ave' %}🐦
+                        {% elif mascota.especie == 'Conejo' %}🐰
+                        {% else %}🐾{% endif %}
+                    </div>
+                    <div>
+                        <div class="identificador">Ficha de paciente · #{{ mascota.id_mascota }}</div>
+                        <h2 class="perfil-nombre" id="nombre-mascota">{{ mascota.nombre }}</h2>
+                        <div class="etiquetas">
+                            <span class="etiqueta">{{ mascota.especie }}</span>
+                            <span class="etiqueta clara">{{ mascota.raza }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="resumen">
+                    <div class="dato"><span class="titulo-dato">Sexo</span><span class="valor-dato">{{ mascota.sexo_texto }}</span></div>
+                    <div class="dato"><span class="titulo-dato">Edad</span><span class="valor-dato">{{ mascota.edad }}</span></div>
+                    <div class="dato"><span class="titulo-dato">Nacimiento</span><span class="valor-dato">{{ mascota.nacimiento_texto }}</span></div>
+                    <div class="dato"><span class="titulo-dato">Esterilizado</span><span class="valor-dato">{{ mascota.esterilizado_texto }}</span></div>
+                </div>
+            </section>
+
+            <h3 class="titulo-secciones">Información adicional</h3>
+
+            <details class="acordeon">
+                <summary>
+                    <span class="icono-seccion" aria-hidden="true">🩺</span>
+                    <span class="texto-seccion"><strong>Salud y antecedentes</strong><small>Alergias y condiciones médicas</small></span>
+                    <span class="flecha" aria-hidden="true"></span>
+                </summary>
+                <div class="contenido">
+                    <div class="rejilla">
+                        <div class="celda"><span class="mini-label">Alergias registradas</span><div class="valor">{{ mascota.alergias or 'Sin información registrada' }}</div></div>
+                        <div class="celda"><span class="mini-label">Condiciones médicas</span><div class="valor">{{ mascota.condiciones_medicas or 'Sin información registrada' }}</div></div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>
+                    <span class="icono-seccion" aria-hidden="true">👤</span>
+                    <span class="texto-seccion"><strong>Propietarios y contactos</strong><small>{{ propietarios|length }} propietario(s) registrado(s)</small></span>
+                    <span class="flecha" aria-hidden="true"></span>
+                </summary>
+                <div class="contenido">
+                    {% for propietario in propietarios %}
+                        <div class="subtarjeta">
+                            <h4>{{ propietario.nombre }}</h4>
+                            <p class="meta">Propietario · {{ propietario.tipo_doc }} {{ propietario.no_documento }}</p>
+                            <div class="rejilla">
+                                <div class="celda"><span class="mini-label">Teléfono</span><div class="valor">{{ propietario.telefono }}</div></div>
+                                <div class="celda"><span class="mini-label">Correo electrónico</span><div class="valor">{{ propietario.correo }}</div></div>
+                                <div class="celda ancho-completo"><span class="mini-label">Dirección</span><div class="valor">{{ propietario.direccion }}</div></div>
+                            </div>
+                            {% if propietario.contacto_nombre %}
+                                <div class="separador"></div>
+                                <div class="mini-label">Contacto auxiliar</div>
+                                <div class="valor"><strong>{{ propietario.contacto_nombre }}</strong> · {{ propietario.contacto_relacion or 'Relación no registrada' }} · {{ propietario.contacto_telefono }}</div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="vacio">No hay propietarios asociados a esta mascota.</p>
+                    {% endfor %}
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>
+                    <span class="icono-seccion" aria-hidden="true">📋</span>
+                    <span class="texto-seccion"><strong>Atenciones y citas</strong><small>{{ atenciones|length }} registro(s) · Consulta, cirugía, peluquería y otros servicios</small></span>
+                    <span class="flecha" aria-hidden="true"></span>
+                </summary>
+                <div class="contenido">
+                    {% for atencion in atenciones %}
+                        <details class="visita">
+                            <summary>
+                                <div class="visita-titulo">
+                                    <strong>{{ atencion.servicio }}</strong>
+                                    <div class="fecha">{{ atencion.fecha_texto }} · Atención #{{ atencion.id_atencion }}</div>
+                                </div>
+                                <span class="estado {% if atencion.estado_cita in ['Agendada', 'Confirmada'] %}pendiente{% elif atencion.estado_cita in ['Cancelada', 'No asistio'] %}cancelada{% endif %}">{{ atencion.estado_cita or 'Sin estado' }}</span>
+                                <span class="flecha" aria-hidden="true"></span>
+                            </summary>
+                            <div class="visita-contenido">
+                                <div class="rejilla">
+                                    <div class="celda"><span class="mini-label">Tipo de servicio</span><div class="valor">{{ atencion.tipo_servicio }}</div></div>
+                                    <div class="celda"><span class="mini-label">Profesional asignado</span><div class="valor">{{ atencion.profesional or 'No registrado' }}</div></div>
+                                    <div class="celda"><span class="mini-label">Peso registrado</span><div class="valor">{% if atencion.peso is not none %}{{ atencion.peso }} kg{% else %}No registrado{% endif %}</div></div>
+                                    <div class="celda"><span class="mini-label">Valor registrado</span><div class="valor">{{ atencion.valor_cobrado|cop }}</div></div>
+                                    <div class="celda ancho-completo"><span class="mini-label">Sede</span><div class="valor">{{ atencion.sede }}</div></div>
+                                    {% if atencion.motivo %}<div class="celda"><span class="mini-label">Motivo</span><div class="valor">{{ atencion.motivo }}</div></div>{% endif %}
+                                    {% if atencion.diagnostico %}<div class="celda"><span class="mini-label">Diagnóstico</span><div class="valor">{{ atencion.diagnostico }}</div></div>{% endif %}
+                                    {% if atencion.tratamiento %}<div class="celda ancho-completo"><span class="mini-label">Tratamiento</span><div class="valor">{{ atencion.tratamiento }}</div></div>{% endif %}
+                                    {% if atencion.evaluacion %}<div class="celda ancho-completo"><span class="mini-label">Evaluación</span><div class="valor">{{ atencion.evaluacion }}</div></div>{% endif %}
+                                    {% if atencion.plan_de_manejo %}<div class="celda ancho-completo"><span class="mini-label">Plan de manejo</span><div class="valor">{{ atencion.plan_de_manejo }}</div></div>{% endif %}
+                                    {% if atencion.cirugia_nombre %}<div class="celda"><span class="mini-label">Cirugía</span><div class="valor">{{ atencion.cirugia_nombre }}</div></div>{% endif %}
+                                    {% if atencion.cirugia_estado %}<div class="celda"><span class="mini-label">Estado posoperatorio</span><div class="valor">{{ atencion.cirugia_estado }}</div></div>{% endif %}
+                                    {% if atencion.hospital_estado %}<div class="celda"><span class="mini-label">Estado hospitalización</span><div class="valor">{{ atencion.hospital_estado }}</div></div>{% endif %}
+                                    {% if atencion.hospital_jaula %}<div class="celda"><span class="mini-label">Jaula</span><div class="valor">{{ atencion.hospital_jaula }}</div></div>{% endif %}
+                                    {% if atencion.ingreso_texto %}<div class="celda"><span class="mini-label">Ingreso</span><div class="valor">{{ atencion.ingreso_texto }}</div></div>{% endif %}
+                                    {% if atencion.alta_texto %}<div class="celda"><span class="mini-label">Alta</span><div class="valor">{{ atencion.alta_texto }}</div></div>{% endif %}
+                                    {% if atencion.informacion_alta %}<div class="celda ancho-completo"><span class="mini-label">Información del alta</span><div class="valor">{{ atencion.informacion_alta }}</div></div>{% endif %}
+                                    {% if atencion.peluqueria_detalle %}<div class="celda ancho-completo"><span class="mini-label">Detalles de peluquería</span><div class="valor">{{ atencion.peluqueria_detalle }}</div></div>{% endif %}
+                                    {% if atencion.peluqueria_jaula %}<div class="celda"><span class="mini-label">Jaula de peluquería</span><div class="valor">{{ atencion.peluqueria_jaula }}</div></div>{% endif %}
+                                </div>
+                            </div>
+                        </details>
+                    {% else %}
+                        <p class="vacio">Todavía no existen atenciones o citas registradas.</p>
+                    {% endfor %}
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>
+                    <span class="icono-seccion" aria-hidden="true">💉</span>
+                    <span class="texto-seccion"><strong>Vacunación</strong><small>{{ vacunas|length }} vacuna(s) registrada(s) y próximas dosis</small></span>
+                    <span class="flecha" aria-hidden="true"></span>
+                </summary>
+                <div class="contenido">
+                    {% for vacuna in vacunas %}
+                        <div class="subtarjeta">
+                            <h4>{{ vacuna.nombre }}</h4>
+                            {% if vacuna.descripcion %}<p class="meta">{{ vacuna.descripcion }}</p>{% endif %}
+                            <div class="rejilla">
+                                <div class="celda"><span class="mini-label">Fecha de aplicación</span><div class="valor">{{ vacuna.aplicacion_texto }}</div></div>
+                                <div class="celda"><span class="mini-label">Próxima dosis</span><div class="valor">{{ vacuna.proxima_texto or 'No programada' }}</div></div>
+                                <div class="celda"><span class="mini-label">Dosis registrada</span><div class="valor">{{ vacuna.dosis }}</div></div>
+                                <div class="celda"><span class="mini-label">Estado de la atención</span><div class="valor">{{ vacuna.estado_cita or 'Sin estado' }}</div></div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="vacio">No hay registros de vacunación para esta mascota.</p>
+                    {% endfor %}
+                </div>
+            </details>
+
+            <details class="acordeon">
+                <summary>
+                    <span class="icono-seccion" aria-hidden="true">🔬</span>
+                    <span class="texto-seccion"><strong>Exámenes de laboratorio</strong><small>{{ examenes|length }} examen(es) solicitados</small></span>
+                    <span class="flecha" aria-hidden="true"></span>
+                </summary>
+                <div class="contenido">
+                    {% for examen in examenes %}
+                        <div class="subtarjeta">
+                            <h4>{{ examen.tipo_examen }}</h4>
+                            <p class="meta">Orden #{{ examen.id_orden }} · {{ examen.fecha_texto }}</p>
+                        </div>
+                    {% else %}
+                        <p class="vacio">No hay exámenes de laboratorio registrados.</p>
+                    {% endfor %}
+                </div>
+            </details>
+            <p class="pie">Los datos de esta ficha provienen de la base de datos Oracle de la veterinaria.</p>
+        {% endif %}
+    </main>
+</body>
+</html>
