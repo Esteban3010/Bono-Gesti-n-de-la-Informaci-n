@@ -50,7 +50,7 @@ cd <CARPETA_DEL_REPOSITORIO>
 
 También puedes descargarlo desde GitHub mediante **Code → Download ZIP** y descomprimirlo.
 
-### Paso 2. Crear un entorno virtual de Python
+### Paso 2. Crear un entorno virtual de Python (Opcional)
 
 Desde la carpeta donde se encuentra `app.py`, ejecuta:
 
